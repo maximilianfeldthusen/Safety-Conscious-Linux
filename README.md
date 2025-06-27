@@ -99,13 +99,9 @@ Sends a keep-alive signal to the watchdog device, preventing the system from reb
 ---
 
 
-BASH COMMAND WRAPPERS
+###  Example Bash Commands
 
 Compile your code into an executable called e.g. `safety_app`.
-
----
-
-###  Example Bash Commands
 
 ```bash
 #!/bin/bash
