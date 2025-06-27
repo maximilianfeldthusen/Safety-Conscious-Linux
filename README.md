@@ -95,3 +95,89 @@ Sends a keep-alive signal to the watchdog device, preventing the system from reb
 - Log messages for every failure point
 - No dynamic memory allocation
 - Suitable foundation for watchdog-controlled embedded Linux services
+
+---
+
+
+BASH COMMAND WRAPPERS
+
+Compile your code into an executable called e.g. `safety_app`.
+
+---
+
+###  Example Bash Commands
+
+```bash
+#!/bin/bash
+# safety.sh — Bash wrapper for safety_app
+
+APP="./safety_app"
+
+read_sensor() {
+    echo "Reading sensor value..."
+    $APP read
+}
+
+ping_watchdog() {
+    echo "Pinging watchdog..."
+    $APP ping
+}
+
+read_and_ping() {
+    echo "Reading sensor and pinging watchdog..."
+    $APP both
+}
+
+loop_mode() {
+    echo "Entering monitor loop (Ctrl+C to stop)..."
+    $APP loop
+}
+
+usage() {
+    echo "Usage: $0 {read|ping|both|loop}"
+}
+
+case "$1" in
+    read)         read_sensor ;;
+    ping)         ping_watchdog ;;
+    both)         read_and_ping ;;
+    loop)         loop_mode ;;
+    *)            usage ;;
+esac
+```
+
+Make it executable:
+
+```bash
+chmod +x safety.sh
+```
+
+Now you can run:
+
+```bash
+./safety.sh read     # One-time sensor reading
+./safety.sh loop     # Continuous monitoring
+```
+
+---
+
+###  Add to Cron for Periodic Watchdog Kick
+
+Edit your crontab with:
+
+```bash
+crontab -e
+```
+
+Then add a line like:
+
+```cron
+* * * * * /path/to/safety.sh both >> /var/log/safety.log 2>&1
+```
+
+This runs it every minute to keep the watchdog happy and record the sensor state.
+
+Want to extend this with email alerts on threshold breaches or systemd service integration? We can totally do that next.
+
+
+  
