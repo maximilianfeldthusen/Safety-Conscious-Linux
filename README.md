@@ -100,7 +100,7 @@ Sends a keep-alive signal to the watchdog device, preventing the system from reb
 
 It can integrate easily with system scripts, cron jobs, or terminal workflows.
 
-###  Example Bash Commands
+###  Example Bash Command Wrapper
 
 Compile your code into an executable called e.g. `safety_app`.
 
