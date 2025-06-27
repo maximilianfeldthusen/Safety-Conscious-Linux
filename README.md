@@ -173,7 +173,5 @@ Then add a line like:
 
 This runs it every minute to keep the watchdog happy and record the sensor state.
 
-Want to extend this with email alerts on threshold breaches or systemd service integration? We can totally do that next.
-
 
   
