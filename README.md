@@ -187,6 +187,8 @@ This runs it every minute to keep the watchdog happy and record the sensor state
 
 ### Systemd-managed service
 
+Create systemd so it can start automatically at boot, restart on failure, and be monitored.
+
 
 ###  1. Create a systemd Unit File
 
