@@ -175,4 +175,131 @@ Then add a line like:
 This runs it every minute to keep the watchdog happy and record the sensor state.
 
 
-  
+---
+
+
+SYSTEMD-MANAGED
+
+
+Got it! Let’s turn your safety-critical application into a **systemd-managed service**, so it can start automatically at boot, restart on failure, and be monitored like a pro.
+
+---
+
+###  1. Create a systemd Unit File
+
+Save this as `/etc/systemd/system/safety.service`:
+
+```ini
+[Unit]
+Description=Safety Monitoring Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/safety_app loop
+Restart=always
+RestartSec=2
+StandardOutput=append:/var/log/safety.log
+StandardError=inherit
+User=root
+Nice=-10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Make sure to:
+- Adjust the `ExecStart` path if your binary lives elsewhere
+- Use `loop` mode for continuous operation
+- Redirect output to a persistent log file
+
+---
+
+###  2. Set Permissions and Enable the Service
+
+```bash
+sudo chmod 644 /etc/systemd/system/safety.service
+sudo systemctl daemon-reexec
+sudo systemctl enable safety.service
+sudo systemctl start safety.service
+```
+
+You can check its status anytime with:
+
+```bash
+sudo systemctl status safety.service
+```
+
+And view logs with:
+
+```bash
+journalctl -u safety.service -f
+```
+
+---
+
+###  Options
+
+- Add `WatchdogSec=5` in `[Service]` if you want systemd itself to monitor app responsiveness
+- Use `EnvironmentFile=` to support config via `/etc/safety.conf`
+- Set `MemoryMax=` or `CPUQuota=` to enforce resource boundaries
+
+If you'd like help integrating graceful signal handling or exposing health via a socket, I can help level this up too.
+
+
+---
+
+KNOWN ISSUES
+
+
+###  Compile-Time Sanity Check
+Make sure to compile with appropriate flags to catch warnings as errors:
+
+```sh
+gcc -Wall -Wextra -Werror -o safety_app safety_app.c
+```
+
+---
+
+###  Common Pitfalls & Fix Suggestions
+
+1. **Nonexistent Devices**
+   - Verify that `/dev/sensor0` and `/dev/watchdog` exist and have appropriate permissions:
+     ```sh
+     ls -l /dev/sensor0 /dev/watchdog
+     ```
+
+2. **Unsupported `ioctl` Command**
+   - Ensure the `SENSOR_IOCTL_READ` macro matches the driver's expected interface.
+   - If the sensor driver doesn’t support `_IOR('s', 0x01, int)`, `ioctl` will fail with `ENOTTY`.
+
+3. **Hardcoded Watchdog IOCTL**
+   - Replace `0x80045705` with the portable macro if available:
+     ```c
+     #include <linux/watchdog.h>
+     ioctl(wd_fd, WDIOC_KEEPALIVE, 0);
+     ```
+
+4. **Priority Setting Fails**
+   - Real-time priority changes require root. If running as a regular user, `sched_setscheduler` will fail with `EPERM`.
+
+5. **Safe Resource Cleanup**
+   - Consider using helper functions or `goto` fail-cleanup patterns to ensure resources are released even after partial failures.
+
+---
+
+###  Suggested Enhancement: `errno` Explanation
+In `perror("sched_setscheduler");`, append `strerror(errno)` to `syslog()` as well so the log shows up even when not in a terminal.
+
+```c
+syslog(LOG_ERR, "sched_setscheduler failed: %s", strerror(errno));
+```
+
+---
+
+###  Runtime Debugging
+Insert temporary `fprintf(stderr, ...)` calls or `syslog()` entries before and after critical calls to trace execution flow.
+
+---
+
+
