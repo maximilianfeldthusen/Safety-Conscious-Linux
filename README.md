@@ -104,6 +104,12 @@ It can integrate easily with system scripts, cron jobs, or terminal workflows.
 
 Compile your code into an executable called e.g. `safety_app`.
 
+Make sure to compile with appropriate flags to catch warnings as errors:
+
+```sh
+gcc -Wall -Wextra -Werror -o safety_app safety_app.c
+```
+
 ```bash
 #!/bin/bash
 # safety.sh — Bash wrapper for safety_app
