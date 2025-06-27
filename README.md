@@ -179,7 +179,7 @@ This runs it every minute to keep the watchdog happy and record the sensor state
 
 
 
- **systemd-managed service**
+### Systemd-managed service
 
 
 ###  1. Create a systemd Unit File
@@ -241,12 +241,10 @@ journalctl -u safety.service -f
 - Use `EnvironmentFile=` to support config via `/etc/safety.conf`
 - Set `MemoryMax=` or `CPUQuota=` to enforce resource boundaries
 
-If you'd like help integrating graceful signal handling or exposing health via a socket, I can help level this up too.
-
 
 ---
 
-KNOWN ISSUES
+### KNOWN ISSUES
 
 
 ###  Compile-Time Sanity Check
@@ -297,6 +295,6 @@ syslog(LOG_ERR, "sched_setscheduler failed: %s", strerror(errno));
 ###  Runtime Debugging
 Insert temporary `fprintf(stderr, ...)` calls or `syslog()` entries before and after critical calls to trace execution flow.
 
----
+
 
 
