@@ -178,12 +178,9 @@ This runs it every minute to keep the watchdog happy and record the sensor state
 ---
 
 
-SYSTEMD-MANAGED
 
+ **systemd-managed service**
 
-Got it! Let’s turn your safety-critical application into a **systemd-managed service**, so it can start automatically at boot, restart on failure, and be monitored like a pro.
-
----
 
 ###  1. Create a systemd Unit File
 
